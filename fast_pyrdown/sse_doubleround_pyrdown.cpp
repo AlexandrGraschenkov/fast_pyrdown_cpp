@@ -261,11 +261,14 @@ void ssePyrdown4(const uint8_t *image, int height, int width, std::vector<uint8_
         average4Rows(&image[offset], &half_image[quad_offset], width, process_width);
         
         // process rest of line
-        for (int c = process_width; c < width; c += 2) {
-            out[quad_offset + c/2] = ((int)image[offset+c] +
-                                      (int)image[offset+c+1] +
-                                      (int)image[offset+width+c] +
-                                      (int)image[offset+width+c+1]) / 4;
+        for (int c = process_width; c < width; c += 4) {
+            int32_t val = 0;
+            for (int rr = 0; rr < 4; r++) {
+                for (int cc = 0; cc < 4; cc++) {
+                    val += image[offset + c + rr*width + cc];
+                }
+            }
+            out[quad_offset + c/4] = val / 16;
         }
     }
 }
